@@ -33,7 +33,7 @@ jobs:
       run: |
         pwd
         # This command finds all Python files recursively and runs flake8 on them, excluding non-project dirs
-        flake8 . --exclude=node_modules,djangoenv,venv,server/frontend/node_modules
+        flake8 . --exclude=node_modules,djangoenv,venv,server/frontend/node_modules,migrations
         echo "Linted all the python files successfully"
 
   lint_js:
