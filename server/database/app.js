@@ -47,18 +47,23 @@ app.get('/fetchDealers/:state', (req, res) => {
 app.get('/fetchDealer/:id', (req, res) => {
   const id = parseInt(req.params.id);
   const dealer = dealerships_data.find(d => d.id === id);
-  res.json(dealer || {});
+  res.json(dealer ? [dealer] : []);
 });
 
 // Insert review (in-memory only, sufficient for screenshots)
-app.post('/insert_review', express.raw({ type: '*/*' }), (req, res) => {
+app.post('/insert_review', (req, res) => {
   try {
-    const data = JSON.parse(req.body);
+    let data;
+    if (Buffer.isBuffer(req.body) || typeof req.body === 'string') {
+      data = JSON.parse(req.body);
+    } else {
+      data = req.body;
+    }
     const maxId = reviews_data.reduce((m, r) => Math.max(m, r.id), 0);
     const review = {
       id: maxId + 1,
       name: data['name'],
-      dealership: data['dealership'],
+      dealership: parseInt(data['dealership']),
       review: data['review'],
       purchase: data['purchase'],
       purchase_date: data['purchase_date'],

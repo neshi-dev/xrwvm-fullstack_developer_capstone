@@ -19,6 +19,25 @@ logger = logging.getLogger(__name__)
 
 # Create your views here.
 
+def get_cars(request):
+    count = CarMake.objects.count()
+    if(count == 0):
+        init_car_models()
+    car_models = CarModel.objects.select_related('car_make')
+    cars = []
+    for car_model in car_models:
+        cars.append({"CarMake": car_model.car_make.name, "CarModel": car_model.name})
+    return JsonResponse({"CarModels":cars})
+
+def init_car_models():
+    # Seed some data if empty
+    toyota = CarMake.objects.create(name="Toyota", description="Toyota makes great cars")
+    honda = CarMake.objects.create(name="Honda", description="Honda makes great cars")
+    CarModel.objects.create(name="Camry", car_make=toyota, type="Sedan", year=2023)
+    CarModel.objects.create(name="Corolla", car_make=toyota, type="Sedan", year=2023)
+    CarModel.objects.create(name="Civic", car_make=honda, type="Sedan", year=2023)
+    CarModel.objects.create(name="CR-V", car_make=honda, type="SUV", year=2023)
+
 @csrf_exempt
 def login_user(request):
     data = json.loads(request.body)
@@ -72,9 +91,18 @@ def get_dealer_reviews(request, dealer_id):
     if(dealer_id):
         endpoint = "/fetchReviews/dealer/"+str(dealer_id)
         reviews = get_request(endpoint)
-        for review_detail in reviews:
-            response = analyze_review_sentiments(review_detail['review'])
-            review_detail['sentiment'] = response['sentiment']
+        if reviews is not None:
+            for review_detail in reviews:
+                try:
+                    response = analyze_review_sentiments(review_detail['review'])
+                    if response and 'sentiment' in response:
+                        review_detail['sentiment'] = response['sentiment']
+                    else:
+                        review_detail['sentiment'] = "neutral"
+                except:
+                    review_detail['sentiment'] = "neutral"
+        else:
+            reviews = []
         return JsonResponse({"status":200,"reviews":reviews})
     else:
         return JsonResponse({"status":400,"message":"Bad Request"})
@@ -87,6 +115,7 @@ def get_dealer_details(request, dealer_id):
     else:
         return JsonResponse({"status":400,"message":"Bad Request"})
 
+@csrf_exempt
 def add_review(request):
     if(request.user.is_authenticated == False):
         return JsonResponse({"status":403,"message":"Unauthorized"})
