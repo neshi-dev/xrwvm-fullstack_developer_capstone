@@ -10,14 +10,14 @@ app.use(require('body-parser').urlencoded({ extended: false }));
 app.use(express.json());
 
 // Load data from JSON files into memory
-let reviews_data = JSON.parse(fs.readFileSync("data/reviews.json", 'utf8'))['reviews'];
-let dealerships_data = JSON.parse(fs.readFileSync("data/dealerships.json", 'utf8'))['dealerships'];
+let reviews_data = JSON.parse(fs.readFileSync("data/reviews.json", 'utf8')).reviews;
+let dealerships_data = JSON.parse(fs.readFileSync("data/dealerships.json", 'utf8')).dealerships;
 
 console.log(`Loaded ${dealerships_data.length} dealerships and ${reviews_data.length} reviews from JSON files.`);
 
 // Express route to home
 app.get('/', async (req, res) => {
-  res.send("Welcome to the Dealers API")
+  res.send("Welcome to the Dealers API");
 });
 
 // Fetch all reviews
