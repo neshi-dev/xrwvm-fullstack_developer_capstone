@@ -63,14 +63,14 @@ app.post('/insert_review', (req, res) => {
     const maxId = reviews_data.reduce((m, r) => Math.max(m, r.id), 0);
     const review = {
       id: maxId + 1,
-      name: data['name'],
-      dealership: parseInt(data['dealership']),
-      review: data['review'],
-      purchase: data['purchase'],
-      purchase_date: data['purchase_date'],
-      car_make: data['car_make'],
-      car_model: data['car_model'],
-      car_year: data['car_year'],
+      name: data.name,
+      dealership: parseInt(data.dealership),
+      review: data.review,
+      purchase: data.purchase,
+      purchase_date: data.purchase_date,
+      car_make: data.car_make,
+      car_model: data.car_model,
+      car_year: data.car_year,
     };
     reviews_data.push(review);
     res.json(review);
