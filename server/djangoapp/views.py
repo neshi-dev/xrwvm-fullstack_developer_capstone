@@ -1,5 +1,5 @@
 from django.contrib.auth.models import User
-from django.shortcuts import login, logout, authenticate
+from django.contrib.auth import login, logout, authenticate
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import logging
