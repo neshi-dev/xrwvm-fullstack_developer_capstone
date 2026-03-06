@@ -2,7 +2,9 @@ import requests
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# Use absolute path so .env loads correctly regardless of Django's working directory
+_env_path = os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))), '.env')
+load_dotenv(_env_path)
 
 backend_url = os.getenv('backend_url', default="http://localhost:3030")
 sentiment_analyzer_url = os.getenv('sentiment_analyzer_url', default="http://localhost:5050/")
