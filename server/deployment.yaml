@@ -23,6 +23,11 @@ spec:
       - image: us.icr.io/sn-labs-nellimotavva/dealership:latest
         imagePullPolicy: Always
         name: dealership
+        env:
+        - name: backend_url
+          value: "http://database-service:3030" # Placeholder - user will need to confirm/update
+        - name: sentiment_analyzer_url
+          value: "https://sn-labs-nellimotavva.us-south.codeengine.appdomain.cloud/"
         ports:
         - containerPort: 8000
           protocol: TCP
