@@ -2,16 +2,27 @@ import requests
 import os
 from dotenv import load_dotenv
 
-# Use absolute path so .env loads correctly
-_base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-_env_path = os.path.join(_base_dir, '.env')
-load_dotenv(_env_path)
-
-backend_url = os.getenv('backend_url', default="http://localhost:3030")
-sentiment_analyzer_url = os.getenv(
+# Prioritize Kubernetes environment variables
+backend_url = os.environ.get('backend_url', "http://localhost:3030")
+sentiment_analyzer_url = os.environ.get(
     'sentiment_analyzer_url',
-    default="http://localhost:5050/"
+    "http://localhost:5050/"
 )
+
+# Only load .env if not in a containerized environment (optional fallback)
+if not os.environ.get('KUBERNETES_SERVICE_HOST'):
+    _base_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+    _env_path = os.path.join(_base_dir, '.env')
+    if os.path.exists(_env_path):
+        load_dotenv(_env_path)
+        # Re-check after loading .env if they weren't set
+        if backend_url == "http://localhost:3030":
+            backend_url = os.getenv('backend_url', backend_url)
+        if sentiment_analyzer_url == "http://localhost:5050/":
+            sentiment_analyzer_url = os.getenv(
+                'sentiment_analyzer_url',
+                sentiment_analyzer_url
+            )
 
 
 def get_request(endpoint, **kwargs):
