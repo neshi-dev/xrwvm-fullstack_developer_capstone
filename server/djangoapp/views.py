@@ -48,6 +48,7 @@ def init_car_models():
         name="CR-V", car_make=honda, type="SUV", year=2023
     )
 
+
 @csrf_exempt
 def login_user(request):
     data = json.loads(request.body)
