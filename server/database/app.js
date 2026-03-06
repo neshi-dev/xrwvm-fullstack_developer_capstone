@@ -1,3 +1,4 @@
+/*jshint esversion: 8 */
 const express = require('express');
 const fs = require('fs');
 const cors = require('cors');

@@ -67,7 +67,7 @@ def registration(request):
     try:
         User.objects.get(username=username)
         username_exist = True
-    except:
+    except Exception as e:
         logger.debug("{} is new user".format(username))
 
     if not username_exist:
@@ -99,7 +99,7 @@ def get_dealer_reviews(request, dealer_id):
                         review_detail['sentiment'] = response['sentiment']
                     else:
                         review_detail['sentiment'] = "neutral"
-                except:
+                except Exception as e:
                     review_detail['sentiment'] = "neutral"
         else:
             reviews = []
@@ -123,5 +123,5 @@ def add_review(request):
     try:
         response = post_review(data)
         return JsonResponse({"status":200})
-    except:
+    except Exception as e:
         return JsonResponse({"status":401,"message":"Error in posting review"})
