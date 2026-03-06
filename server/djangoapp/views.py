@@ -1,16 +1,9 @@
-from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponse
 from django.contrib.auth.models import User
-from django.shortcuts import get_object_or_404, render, redirect
-from django.contrib.auth import logout
-from django.contrib import messages
-from datetime import datetime
-
+from django.shortcuts import login, logout, authenticate
 from django.http import JsonResponse
-from django.contrib.auth import login, authenticate
+from django.views.decorators.csrf import csrf_exempt
 import logging
 import json
-from django.views.decorators.csrf import csrf_exempt
 from .models import CarMake, CarModel
 from .restapis import get_request, analyze_review_sentiments, post_review
 
@@ -72,6 +65,7 @@ def logout_user(request):
     data = {"userName": ""}
     return JsonResponse(data)
 
+
 @csrf_exempt
 def registration(request):
     data = json.loads(request.body)
@@ -110,6 +104,7 @@ def get_dealerships(request, state="All"):
         endpoint = "/fetchDealers/" + state
     dealerships = get_request(endpoint)
     return JsonResponse({"status": 200, "dealers": dealerships})
+
 
 def get_dealer_reviews(request, dealer_id):
     if (dealer_id):
