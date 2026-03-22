@@ -34,11 +34,13 @@ class TestAnalyseSentimentEndpoint:
         return json.loads(response.data)
 
     def test_positive_review_classified_as_positive(self, client):
-        data = self._analyse(client, 'This%20car%20is%20absolutely%20fantastic%20and%20wonderful')
+        text = 'This%20car%20is%20absolutely%20fantastic%20and%20wonderful'
+        data = self._analyse(client, text)
         assert data['sentiment'] == 'positive'
 
     def test_negative_review_classified_as_negative(self, client):
-        data = self._analyse(client, 'Terrible%20awful%20horrible%20worst%20experience%20ever')
+        text = 'Terrible%20awful%20horrible%20worst%20experience%20ever'
+        data = self._analyse(client, text)
         assert data['sentiment'] == 'negative'
 
     def test_neutral_review_classified_as_neutral(self, client):

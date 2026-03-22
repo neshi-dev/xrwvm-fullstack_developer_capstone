@@ -62,7 +62,9 @@ def login_user(request):
     username = data.get('userName', '').strip()
     password = data.get('password', '')
     if not username or not password:
-        return JsonResponse({"error": "Username and password required"}, status=400)
+        return JsonResponse(
+            {"error": "Username and password required"}, status=400
+        )
     user = authenticate(username=username, password=password)
     response_data = {"userName": username}
     if user is not None:

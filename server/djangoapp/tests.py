@@ -1,7 +1,6 @@
 import json
-from django.test import TestCase, Client
+from django.test import TestCase
 from django.contrib.auth.models import User
-from django.urls import reverse
 
 
 class GetCarsViewTest(TestCase):
@@ -89,13 +88,17 @@ class LoginViewTest(TestCase):
         )
 
     def test_valid_credentials_return_authenticated(self):
-        response = self._post({'userName': 'loginuser', 'password': 'Correct1!'})
+        response = self._post(
+            {'userName': 'loginuser', 'password': 'Correct1!'}
+        )
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertEqual(data['status'], 'Authenticated')
 
     def test_wrong_password_does_not_return_authenticated(self):
-        response = self._post({'userName': 'loginuser', 'password': 'WrongPass!'})
+        response = self._post(
+            {'userName': 'loginuser', 'password': 'WrongPass!'}
+        )
         self.assertEqual(response.status_code, 200)
         data = response.json()
         self.assertNotIn('status', data)

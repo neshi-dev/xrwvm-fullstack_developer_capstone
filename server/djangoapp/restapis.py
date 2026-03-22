@@ -27,7 +27,8 @@ if not os.environ.get('KUBERNETES_SERVICE_HOST'):
 
 
 def get_request(endpoint, **kwargs):
-    # Use urlencode to safely encode query parameters and prevent URL injection.
+    # Use urlencode to safely encode query parameters
+    # and prevent URL injection.
     params = "?" + urlencode(kwargs) if kwargs else ""
     request_url = backend_url + endpoint + params
 
@@ -41,7 +42,8 @@ def get_request(endpoint, **kwargs):
 
 
 def analyze_review_sentiments(text):
-    # URL-encode the review text to prevent path injection into the Flask route.
+    # URL-encode the review text to prevent path injection
+    # into the Flask route.
     request_url = sentiment_analyzer_url + "analyze/" + quote(text, safe='')
     try:
         response = requests.get(request_url)

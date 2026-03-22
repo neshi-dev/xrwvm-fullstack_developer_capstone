@@ -12,11 +12,11 @@ const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
   .map(o => o.trim())
   .filter(Boolean);
 
-app.use(cors(
-  allowedOrigins.length
-    ? { origin: allowedOrigins, optionsSuccessStatus: 200 }
-    : {} // fallback: permissive (development only)
-));
+let corsOptions = {};
+if (allowedOrigins.length) {
+  corsOptions = { origin: allowedOrigins, optionsSuccessStatus: 200 };
+}
+app.use(cors(corsOptions));
 
 // Limit request body size to 1 MB to prevent denial-of-service via large payloads.
 app.use(require('body-parser').urlencoded({ extended: false, limit: '1mb' }));
