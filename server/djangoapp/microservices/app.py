@@ -1,6 +1,7 @@
 from flask import Flask
 from nltk.sentiment import SentimentIntensityAnalyzer
 import json
+import os
 app = Flask("Sentiment Analyzer")
 
 sia = SentimentIntensityAnalyzer()
@@ -32,4 +33,7 @@ def analyze_sentiment(input_txt):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    # Never run with debug=True in production – it enables the Werkzeug
+    # interactive debugger, which allows arbitrary code execution.
+    debug_mode = os.environ.get('FLASK_DEBUG', 'False') == 'True'
+    app.run(debug=debug_mode)

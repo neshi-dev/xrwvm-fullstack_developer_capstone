@@ -5,9 +5,22 @@ const cors = require('cors');
 const app = express();
 const port = 3030;
 
-app.use(cors());
-app.use(require('body-parser').urlencoded({ extended: false }));
-app.use(express.json());
+// Restrict CORS to known origins. In production, replace the list below with
+// the actual frontend origin(s) instead of using the wildcard default.
+const allowedOrigins = (process.env.ALLOWED_ORIGINS || '')
+  .split(',')
+  .map(o => o.trim())
+  .filter(Boolean);
+
+app.use(cors(
+  allowedOrigins.length
+    ? { origin: allowedOrigins, optionsSuccessStatus: 200 }
+    : {} // fallback: permissive (development only)
+));
+
+// Limit request body size to 1 MB to prevent denial-of-service via large payloads.
+app.use(require('body-parser').urlencoded({ extended: false, limit: '1mb' }));
+app.use(express.json({ limit: '1mb' }));
 
 // Load data from JSON files into memory
 let reviews_data = JSON.parse(fs.readFileSync("data/reviews.json", 'utf8')).reviews;

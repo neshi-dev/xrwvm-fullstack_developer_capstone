@@ -22,11 +22,16 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # See https://docs.djangoproject.com/en/3.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY =\
+# Read from environment variable; the fallback is for local dev only.
+# In production, always set the DJANGO_SECRET_KEY environment variable.
+SECRET_KEY = os.environ.get(
+    'DJANGO_SECRET_KEY',
     'django-insecure-ccow$tz_=9%dxu4(0%^(z%nx32#s@(zt9$ih@)5l54yny)wm-0'
+)
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = True
+# Set DJANGO_DEBUG=False in any non-development environment.
+DEBUG = os.environ.get('DJANGO_DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = ['*']
 APPEND_SLASH = False
@@ -146,3 +151,14 @@ STATICFILES_DIRS = [
 # https://docs.djangoproject.com/en/3.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+# Security headers – safe to enable even in development.
+# In production behind HTTPS, also set:
+#   SECURE_SSL_REDIRECT = True
+#   SECURE_HSTS_SECONDS = 31536000
+#   SECURE_HSTS_INCLUDE_SUBDOMAINS = True
+#   SESSION_COOKIE_SECURE = True
+#   CSRF_COOKIE_SECURE = True
+X_FRAME_OPTIONS = 'DENY'
+SECURE_CONTENT_TYPE_NOSNIFF = True
+SECURE_BROWSER_XSS_FILTER = True

@@ -50,16 +50,25 @@ def init_car_models():
 
 
 @csrf_exempt
+# NOTE: @csrf_exempt is used here because this is a JSON API consumed by the
+# React SPA.  To properly protect this endpoint in production, configure the
+# frontend to send the Django CSRF token in the X-CSRFToken request header and
+# remove this decorator.
 def login_user(request):
-    data = json.loads(request.body)
-    username = data['userName']
-    password = data['password']
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    username = data.get('userName', '').strip()
+    password = data.get('password', '')
+    if not username or not password:
+        return JsonResponse({"error": "Username and password required"}, status=400)
     user = authenticate(username=username, password=password)
-    data = {"userName": username}
+    response_data = {"userName": username}
     if user is not None:
         login(request, user)
-        data = {"userName": username, "status": "Authenticated"}
-    return JsonResponse(data)
+        response_data = {"userName": username, "status": "Authenticated"}
+    return JsonResponse(response_data)
 
 
 def logout_user(request):
@@ -69,18 +78,29 @@ def logout_user(request):
 
 
 @csrf_exempt
+# NOTE: @csrf_exempt is used here because this is a JSON API consumed by the
+# React SPA.  To properly protect this endpoint in production, configure the
+# frontend to send the Django CSRF token in the X-CSRFToken request header and
+# remove this decorator.
 def registration(request):
-    data = json.loads(request.body)
-    username = data['userName']
-    password = data['password']
-    first_name = data['firstName']
-    last_name = data['lastName']
-    email = data['email']
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({"error": "Invalid JSON"}, status=400)
+    username = data.get('userName', '').strip()
+    password = data.get('password', '')
+    first_name = data.get('firstName', '').strip()
+    last_name = data.get('lastName', '').strip()
+    email = data.get('email', '').strip()
+    if not username or not password or not email:
+        return JsonResponse(
+            {"error": "Username, password, and email are required"}, status=400
+        )
     username_exist = False
     try:
         User.objects.get(username=username)
         username_exist = True
-    except Exception:
+    except User.DoesNotExist:
         logger.debug("{} is new user".format(username))
 
     if not username_exist:
@@ -141,15 +161,22 @@ def get_dealer_details(request, dealer_id):
 
 
 @csrf_exempt
+# NOTE: @csrf_exempt is used here because this is a JSON API consumed by the
+# React SPA.  Authentication is enforced below. To fully protect this endpoint
+# in production, configure the frontend to send the Django CSRF token in the
+# X-CSRFToken request header and remove this decorator.
 def add_review(request):
     if not request.user.is_authenticated:
         return JsonResponse({"status": 403, "message": "Unauthorized"})
-    data = json.loads(request.body)
+    try:
+        data = json.loads(request.body)
+    except (json.JSONDecodeError, ValueError):
+        return JsonResponse({"status": 400, "message": "Invalid JSON"})
     try:
         post_review(data)
         return JsonResponse({"status": 200})
     except Exception:
         return JsonResponse({
-            "status": 401,
+            "status": 500,
             "message": "Error in posting review"
         })

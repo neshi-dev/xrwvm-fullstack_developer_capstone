@@ -1,5 +1,6 @@
 import requests
 import os
+from urllib.parse import urlencode, quote
 from dotenv import load_dotenv
 
 # Prioritize Kubernetes environment variables
@@ -26,12 +27,9 @@ if not os.environ.get('KUBERNETES_SERVICE_HOST'):
 
 
 def get_request(endpoint, **kwargs):
-    params = ""
-    if kwargs:
-        for key, value in kwargs.items():
-            params = params + key + "=" + value + "&"
-
-    request_url = backend_url + endpoint + "?" + params
+    # Use urlencode to safely encode query parameters and prevent URL injection.
+    params = "?" + urlencode(kwargs) if kwargs else ""
+    request_url = backend_url + endpoint + params
 
     print("GET from {} ".format(request_url))
     try:
@@ -43,7 +41,8 @@ def get_request(endpoint, **kwargs):
 
 
 def analyze_review_sentiments(text):
-    request_url = sentiment_analyzer_url + "analyze/" + text
+    # URL-encode the review text to prevent path injection into the Flask route.
+    request_url = sentiment_analyzer_url + "analyze/" + quote(text, safe='')
     try:
         response = requests.get(request_url)
         return response.json()
