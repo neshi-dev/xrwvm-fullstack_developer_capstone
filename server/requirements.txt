@@ -1,5 +1,10 @@
-requests
-Django
-Pillow
-gunicorn
-python-dotenv
+# Django backend dependencies
+# Versions pinned for reproducible builds.
+# To upgrade: pip install --upgrade <package> && pip freeze | grep <package>
+
+Django==4.2.16
+djangorestframework==3.15.2
+requests==2.32.5
+Pillow==10.4.0
+gunicorn==23.0.0
+python-dotenv==1.0.1
